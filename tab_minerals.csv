@@ -1,0 +1,5 @@
+Mineral_name;Plagioclase;Pyroxene;Quartz;Smecite;Chlorite;Kaolinite;Corrensite;Illite;Amphibole;Grenat;Calcite;Dolomite;Ankerite;Siderite;None
+Number_of_oxygen;8;6;2;11;14;7;25;12;22;12;3;6;6;3;0
+Mineral_type;1;1;1;1;1;1;1;1;1;1;2;2;2;2;1
+silicate;1;;;;;;;;;;;;;;
+carbonate;2;;;;;;;;;;;;;;
