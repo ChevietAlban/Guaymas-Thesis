@@ -1,0 +1,434 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri May 23 09:56:16 2025
+
+@author: 33633
+"""
+#listes des couleurs matplotlib : https://matplotlib.org/stable/gallery/color/named_colors.html
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import mplcursors
+
+plt.close('all')
+
+# Charger le CSV en DataFrame
+df = pd.read_csv("Samples.csv", encoding="utf-8")
+data_numpy = df.to_numpy()
+
+
+
+#Horizons minéralogiques
+"""U1545"""
+Horizon_U1545A = [{"name": "Siliceous ooze (opal_A)", "top": 0, "bottom": 330, "color": "bisque"},
+                  {"name": "Indurated siliceous sediments (opal_CT)", "top": 330, "bottom": 481.9, "color": "burlywood"},
+                  {"name": "Metamorphic aureole", "top": 482, "bottom": 482.15, "color": "cornflowerblue"},
+                  {"name": "Sill", "top": 482.17, "bottom": 483.03, "color": "red"},
+                  {"name": "dolomite cherts", "top": 177, "bottom": 179, "color": "mediumseagreen"},
+                  {"name": "dolomite cherts", "top": 187, "bottom": 189, "color": "mediumseagreen"},
+                  {"name": "dolomite cherts", "top": 224, "bottom": 226, "color": "mediumseagreen"},
+                  {"name": "dolomite cherts", "top": 277, "bottom": 279, "color": "mediumseagreen"},
+                  {"name": "dolomite cherts", "top": 465, "bottom": 467, "color": "mediumseagreen"},
+                  {"name": "dolomite cherts", "top": 470, "bottom": 472, "color": "mediumseagreen"},
+                  {"name": "dolomite cherts", "top": 421, "bottom": 423, "color": "mediumseagreen"},
+                  {"name": "Indurated siliceous sediments (qtz)", "top": 483.03, "bottom": 507.18, "color": "darkgoldenrod"},
+                  ]
+
+
+"""U1546"""
+Horizon_U1546A = [{"name": "Siliceous ooze (opal_A)", "top": 0, "bottom": 328, "color": "bisque"},
+                  {"name": "Indurated siliceous sediments (opal_CT)", "top": 314, "bottom": 346, "color": "burlywood"},
+                  {"name": "Metamorphic aureole", "top": 346, "bottom": 354, "color": "cornflowerblue"},
+                  {"name": "Black metasediment", "top": 354, "bottom": 355, "color": "royalblue"},
+                  {"name": "Sill", "top": 355, "bottom": 364.55, "color": "red"},
+                  {"name": "dolomite cherts", "top": 194, "bottom": 196, "color": "mediumseagreen"},
+                  {"name": "dolomite cherts", "top": 267, "bottom": 269, "color": "mediumseagreen"},
+                  ]
+Horizon_U1546B = [{"name": "No data", "top": 0, "bottom": 333.22, "color": "grey"},
+                  ]
+Horizon_U1546C = [{"name": "Siliceous ooze (opal_A)", "top": 308.2, "bottom": 320.11, "color": "bisque"},
+                  {"name": "Indurated siliceous sediments (opal_CT)", "top": 320.11, "bottom": 346, "color": "burlywood"},
+                  {"name": "Metamorphic aureole", "top": 346, "bottom": 348, "color": "cornflowerblue"},
+                  {"name": "Metamorphic aureole", "top": 430, "bottom": 446, "color": "royalblue"},
+                  {"name": "Indurated siliceous sediments (opal_CT)", "top": 446, "bottom":524, "color": "burlywood"},
+                  {"name": "Indurated siliceous sediments (qtz)", "top": 524, "bottom": 540.05, "color": "darkgoldenrod"},
+                  {"name": "Sill", "top": 348, "bottom": 430, "color": "red"},
+                  ]
+"""U1548"""
+Horizon_U1548A = [{"name": "Sill", "top": 98.4, "bottom": 103.04, "color": "red"},
+                  {"name": "Siliceous ooze (opal_A)", "top": 0, "bottom": 96, "color": "bisque"},
+                  {"name": "Indurated siliceous sediments (opal_CT)", "top":96 , "bottom":98.4, "color": "burlywood"},
+                  ]
+Horizon_U1548B = [{"name": "Sill", "top": 89.2, "bottom": 94.8, "color": "red"},
+                  {"name": "Indurated siliceous sediments (opal_CT)", "top":85 , "bottom":87, "color": "burlywood"},
+                  {"name": "Metamorphic aureole", "top": 87, "bottom": 89.2, "color": "cornflowerblue"},
+                  {"name": "dolomite cherts", "top": 79, "bottom": 81, "color": "mediumseagreen"},
+                  {"name": "Siliceous ooze (opal_A)", "top": 0, "bottom": 79, "color": "bisque"},
+                  {"name": "Siliceous ooze (opal_A)", "top": 81, "bottom": 85, "color": "bisque"},
+                  ]
+Horizon_U1548C = [{"name": "Siliceous ooze (opal_A)", "top": 0, "bottom": 60, "color": "bisque"},
+                  {"name": "Sill", "top": 64.6, "bottom": 69.53, "color": "red"},
+                  {"name": "Indurated siliceous sediments (opal_CT)", "top": 60, "bottom":64.6, "color": "burlywood"},
+                  ]
+"""U1547"""
+Horizon_U1547E = [{"name": "Sill", "top": 81.5, "bottom": 191.24, "color": "red"},
+                  
+                  {"name": "dolomite cherts", "top": 70, "bottom": 72, "color": "mediumseagreen"},
+                  {"name": "Siliceous ooze (opal_A)", "top": 62, "bottom": 70, "color": "bisque"},
+                  {"name": "Siliceous ooze (opal_A)", "top": 72, "bottom": 81.5, "color": "bisque"}
+                  ]
+Horizon_U1547D = [{"name": "Sill", "top": 101.4, "bottom": 191.38, "color": "red"},
+                  {"name": "Siliceous ooze (opal_A)", "top": 0, "bottom": 101.4, "color": "bisque"},
+                  ]
+Horizon_U1547B = [{"name": "Sill2", "top": 120, "bottom": 125, "color": "darkred"},
+                  {"name": "Indurated siliceous sediments (opal_CT)", "top": 125, "bottom": 152.6, "color": "burlywood"},
+                  {"name": "Sill", "top": 152.6, "bottom": 209.94, "color": "red"},
+                  {"name": "Siliceous ooze (opal_A)", "top": 0, "bottom": 120, "color": "bisque"},
+                 
+                  ]
+Horizon_U1547C = [{"name": "Siliceous ooze (opal_A)", "top": 0, "bottom": 110, "color": "bisque"},
+                  {"name": "Sill", "top": 130.1, "bottom": 152.16, "color": "red"},
+                  {"name": "dolomite cherts", "top": 120, "bottom": 122, "color": "mediumseagreen"},
+                  {"name": "dolomite cherts", "top": 129, "bottom": 131, "color": "mediumseagreen"},
+                  {"name": "dolomite cherts", "top": 110, "bottom": 112, "color": "mediumseagreen"},
+                  {"name": "Metamorphic aureole", "top": 131, "bottom": 132.8, "color": "cornflowerblue"},
+                  {"name": "Siliceous ooze (opal_A)", "top": 112, "bottom": 120, "color": "bisque"},
+                  {"name": "Siliceous ooze (opal_A)", "top": 122, "bottom": 129, "color": "bisque"},
+                 ]
+Horizon_U1547A = [{"name": "Siliceous ooze (opal_A)", "top": 0, "bottom": 126.73, "color": "bisque"},
+                  {"name": "Sill", "top": 132.8, "bottom": 132.8+3.9, "color": "red"},
+                  {"name": "Indurated siliceous sediments (opal_CT)", "top": 132.8+3.9, "bottom": 137.0, "color": "burlywood"},
+                  {"name": "Sill", "top": 137.0, "bottom": 137.0+1, "color": "red"},
+                  {"name": "Metamorphic aureole", "top": 126.73, "bottom": 132.8, "color": "cornflowerblue"},
+                  ]
+"""U1550"""
+Horizon_U1550A = [{"name": "Metamorphic aureole", "top": 188.13, "bottom": 203.7, "color": "cornflowerblue"},
+                  {"name": "Sill", "top": 203.7, "bottom": 206.97, "color": "red"},
+                  {"name": "Indurated siliceous sediments (opal_CT)", "top": 168, "bottom": 188.13, "color": "burlywood"},
+                  {"name": "Siliceous ooze (opal_A)", "top": 0, "bottom": 168, "color": "bisque"},
+                  ]
+Horizon_U1550B = [
+    
+   {"name": "Sill", "top": 170.4, "bottom": 173.34, "color": "red"},
+  {"name": "Metamorphic aureole", "top": 160.71, "bottom": 170.4, "color": "cornflowerblue"},
+  {"name": "Siliceous ooze (opal_A)", "top": 0, "bottom": 160.71, "color": "bisque"},
+                  ]
+
+#Samples  (cette partie récupère les échantillons analysés dans le but d'avoir leur répartition le long des forages)
+i=4   #index des colonnes des analyses i=2 pour <2um, i=3 pour <16um, i=4 pour RT
+
+
+
+Sample_U1545A=np.zeros(shape=(len(data_numpy),5),dtype=object)
+Sample_U1546A=np.zeros(shape=(len(data_numpy),5),dtype=object)
+Sample_U1546C=np.zeros(shape=(len(data_numpy),5),dtype=object)
+Sample_U1548A=np.zeros(shape=(len(data_numpy),5),dtype=object)
+Sample_U1548B=np.zeros(shape=(len(data_numpy),5),dtype=object)
+Sample_U1548C=np.zeros(shape=(len(data_numpy),5),dtype=object)
+Sample_U1547A=np.zeros(shape=(len(data_numpy),5),dtype=object)
+Sample_U1547B=np.zeros(shape=(len(data_numpy),5),dtype=object)
+Sample_U1547C=np.zeros(shape=(len(data_numpy),5),dtype=object)
+Sample_U1547E=np.zeros(shape=(len(data_numpy),5),dtype=object)
+Sample_U1550A=np.zeros(shape=(len(data_numpy),5),dtype=object)
+Sample_U1550B=np.zeros(shape=(len(data_numpy),5),dtype=object)
+k=0
+while k<len(data_numpy):
+    if (data_numpy[k, i] == 1) or (data_numpy[k, i] == 2):
+        if "1550A" in str(data_numpy[k,0]):
+            Sample_U1550A[k,0] = data_numpy[k,0]
+            Sample_U1550A[k,1] = data_numpy[k,1]
+            Sample_U1550A[k,2] = data_numpy[k,5]
+            Sample_U1550A[k,3] = data_numpy[k,6]
+            Sample_U1550A[k,4] = data_numpy[k,i]
+        if "1550B" in str(data_numpy[k,0]):
+            Sample_U1550B[k,0] = data_numpy[k,0]
+            Sample_U1550B[k,1] = data_numpy[k,1]
+            Sample_U1550B[k,2] = data_numpy[k,5]
+            Sample_U1550B[k,3] = data_numpy[k,6]
+            Sample_U1550B[k,4] = data_numpy[k,i]
+        if "1545A" in str(data_numpy[k,0]):
+            Sample_U1545A[k,0] = data_numpy[k,0]
+            Sample_U1545A[k,1] = data_numpy[k,1]
+            Sample_U1545A[k,2] = data_numpy[k,5]
+            Sample_U1545A[k,3] = data_numpy[k,6]
+            Sample_U1545A[k,4] = data_numpy[k,i]
+        if "1546A" in str(data_numpy[k,0]):
+            Sample_U1546A[k,0] = data_numpy[k,0]
+            Sample_U1546A[k,1] = data_numpy[k,1]
+            Sample_U1546A[k,2] = data_numpy[k,5]
+            Sample_U1546A[k,3] = data_numpy[k,6]
+            Sample_U1546A[k,4] = data_numpy[k,i] 
+        if "1546C" in str(data_numpy[k,0]):
+            Sample_U1546C[k,0] = data_numpy[k,0]
+            Sample_U1546C[k,1] = data_numpy[k,1]
+            Sample_U1546C[k,2] = data_numpy[k,5]
+            Sample_U1546C[k,3] = data_numpy[k,6]
+            Sample_U1546C[k,4] = data_numpy[k,i]
+        if "1548A" in str(data_numpy[k,0]):
+            Sample_U1548A[k,0] = data_numpy[k,0]
+            Sample_U1548A[k,1] = data_numpy[k,1]
+            Sample_U1548A[k,2] = data_numpy[k,5]
+            Sample_U1548A[k,3] = data_numpy[k,6]
+            Sample_U1548A[k,4] = data_numpy[k,i]
+        if "1548B" in str(data_numpy[k,0]):
+            Sample_U1548B[k,0] = data_numpy[k,0]
+            Sample_U1548B[k,1] = data_numpy[k,1]
+            Sample_U1548B[k,2] = data_numpy[k,5]
+            Sample_U1548B[k,3] = data_numpy[k,6]
+            Sample_U1548B[k,4] = data_numpy[k,i]
+        if "1548C" in str(data_numpy[k,0]):
+            Sample_U1548C[k,0] = data_numpy[k,0]
+            Sample_U1548C[k,1] = data_numpy[k,1]
+            Sample_U1548C[k,2] = data_numpy[k,5]
+            Sample_U1548C[k,3] = data_numpy[k,6]
+            Sample_U1548C[k,4] = data_numpy[k,i]
+        if "1547A" in str(data_numpy[k,0]):
+            Sample_U1547A[k,0] = data_numpy[k,0]
+            Sample_U1547A[k,1] = data_numpy[k,1]
+            Sample_U1547A[k,2] = data_numpy[k,5]
+            Sample_U1547A[k,3] = data_numpy[k,6]
+            Sample_U1547A[k,4] = data_numpy[k,i]
+        if "1547B" in str(data_numpy[k,0]):
+            Sample_U1547B[k,0] = data_numpy[k,0]
+            Sample_U1547B[k,1] = data_numpy[k,1]
+            Sample_U1547B[k,2] = data_numpy[k,5]
+            Sample_U1547B[k,3] = data_numpy[k,6]
+            Sample_U1547B[k,4] = data_numpy[k,i]
+        if "1547C" in str(data_numpy[k,0]):
+            Sample_U1547C[k,0] = data_numpy[k,0]
+            Sample_U1547C[k,1] = data_numpy[k,1]
+            Sample_U1547C[k,2] = data_numpy[k,5]
+            Sample_U1547C[k,3] = data_numpy[k,6]
+            Sample_U1547C[k,4] = data_numpy[k,i]
+        if "1547E" in str(data_numpy[k,0]):
+            Sample_U1547E[k,0] = data_numpy[k,0]
+            Sample_U1547E[k,1] = data_numpy[k,1]
+            Sample_U1547E[k,2] = data_numpy[k,5]
+            Sample_U1547E[k,3] = data_numpy[k,6]
+            Sample_U1547E[k,4] = data_numpy[k,i]
+
+    k=k+1
+k=0
+k = len(Sample_U1546A) - 1
+while k >= 0:
+    if Sample_U1546A[k, 0] == 0:
+        Sample_U1546A = np.delete(Sample_U1546A, k, axis=0)
+    k -= 1
+k=0
+while k >= 0:
+    if Sample_U1545A[k, 0] == 0:
+        Sample_U1545A = np.delete(Sample_U1545A, k, axis=0)
+    k -= 1
+k=0
+k = len(Sample_U1546C) - 1
+while k >= 0:
+    if Sample_U1546C[k, 0] == 0:
+        Sample_U1546C = np.delete(Sample_U1546C, k, axis=0)
+    k -= 1
+k=0
+k = len(Sample_U1548A) - 1
+while k >= 0:
+    if Sample_U1548A[k, 0] == 0:
+        Sample_U1548A = np.delete(Sample_U1548A, k, axis=0)
+    k -= 1
+k=0
+k = len(Sample_U1548B) - 1
+while k >= 0:
+    if Sample_U1548B[k, 0] == 0:
+        Sample_U1548B = np.delete(Sample_U1548B, k, axis=0)
+    k -= 1
+k=0
+k = len(Sample_U1548C) - 1
+while k >= 0:
+    if Sample_U1548C[k, 0] == 0:
+        Sample_U1548C = np.delete(Sample_U1548C, k, axis=0)
+    k -= 1
+k=0
+k = len(Sample_U1547A) - 1
+while k >= 0:
+    if Sample_U1547A[k, 0] == 0:
+        Sample_U1547A = np.delete(Sample_U1547A, k, axis=0)
+    k -= 1
+k=0
+k = len(Sample_U1547B) - 1
+while k >= 0:
+    if Sample_U1547B[k, 0] == 0:
+        Sample_U1547B = np.delete(Sample_U1547B, k, axis=0)
+    k -= 1
+k=0
+k = len(Sample_U1547C) - 1
+while k >= 0:
+    if Sample_U1547C[k, 0] == 0:
+        Sample_U1547C = np.delete(Sample_U1547C, k, axis=0)
+    k -= 1
+k=0
+k = len(Sample_U1547E) - 1
+while k >= 0:
+    if Sample_U1547E[k, 0] == 0:
+        Sample_U1547E = np.delete(Sample_U1547E, k, axis=0)
+    k -= 1
+k=0
+k = len(Sample_U1550A) - 1
+while k >= 0:
+    if Sample_U1550A[k, 0] == 0:
+        Sample_U1550A = np.delete(Sample_U1550A, k, axis=0)
+    k -= 1
+k=0
+k = len(Sample_U1550B) - 1
+while k >= 0:
+    if Sample_U1550B[k, 0] == 0:
+        Sample_U1550B = np.delete(Sample_U1550B, k, axis=0)
+    k -= 1
+
+#Données sur les sites (horizons + samples)
+sites = {
+    "Site U1545-U1546": {
+        "bar_width": 40,
+        "forages": {
+            "U1545A": {"x_position": -1116,"top": 0,"depth": 508, "samples": Sample_U1545A[:,1], "horizons": Horizon_U1545A,"infos": Sample_U1545A},
+            "U1546A": {"x_position": 0,"top": 0,"depth": 364.55, "samples": Sample_U1546A[:,1], "horizons": Horizon_U1546A,"infos": Sample_U1546A},
+            "U1546C": {"x_position": 52.9586,"top": 308.2,"depth": 540.05, "samples": Sample_U1546C[:,1], "horizons": Horizon_U1546C, "infos": Sample_U1546C},
+        }
+    },
+    "Site U1547-U1548": {
+        "bar_width": 13,
+        "forages": {
+            "1548A": {"x_position": 0,"top": 0,"depth": 103.04, "samples": Sample_U1548A[:,1], "horizons": Horizon_U1548A,"infos": Sample_U1548A},
+            "1548B": {"x_position": 17.2587,"top": 0,"depth": 94.8, "samples": Sample_U1548B[:,1], "horizons": Horizon_U1548B,"infos": Sample_U1548B},
+            "1548C": {"x_position": 52.9586,"top": 0,"depth": 69.55, "samples": Sample_U1548C[:,1], "horizons": Horizon_U1548C,"infos": Sample_U1548C},
+            "1547E": {"x_position": 204.17,"top": 61.8,"depth": 191.24, "samples": Sample_U1547E[:,1], "horizons": Horizon_U1547E,"infos": Sample_U1547E},
+            "1547D": {"x_position": 78.5851+204.17,"top": 81.3,"depth": 191.38, "samples": [], "horizons": Horizon_U1547D,"infos": []},
+            "1547B": {"x_position": 119.38+204.17,"top": 0,"depth": 209.94, "samples": Sample_U1547B[:,1], "horizons": Horizon_U1547B,"infos": Sample_U1547B},
+            "1547C": {"x_position": 195.032+204.17,"top": 81.3,"depth": 152.16, "samples": Sample_U1547C[:,1], "horizons": Horizon_U1547C,"infos": Sample_U1547C},
+            "1547A": {"x_position": 219.001+204.17,"top": 0,"depth": 137.5, "samples": Sample_U1547A[:,1], "horizons": Horizon_U1547A,"infos": Sample_U1547A},
+        }
+    },
+    "Site U1550": {
+        "bar_width": 1.8,
+        "forages": {
+            "1550A": {"x_position": 0,"top": 0,"depth": 207.0, "samples": Sample_U1550A[:,1], "horizons": Horizon_U1550A, "infos" : Sample_U1550A},
+            "1550B": {"x_position": 51.13,"top": 0,"depth": 174.2, "samples": Sample_U1550B[:,1], "horizons": Horizon_U1550B, "infos" : Sample_U1550B},
+        }
+    }
+}
+color = []
+if i == 2 : 
+    color = 'k'
+if i == 3 :
+    color = 'blue'
+if i == 4 :
+    color = 'red'
+    
+MARKERS = {1: 'o',   # cercle
+           2: 's'}   # carré
+# Graphiques détaillés pour chaque site
+for site, data in sites.items():
+    plt.figure(figsize=(10, 10))
+
+    forage_labels = []
+    x_positions = []
+    bar_width = data.get("bar_width", 0.6)
+
+   
+    scatters = []
+
+    for forage, details in data['forages'].items():
+        forage_labels.append(forage)
+        x_positions.append(details['x_position'])
+        top = details['top']
+        depth = details['depth']
+        samples = details['samples']
+
+        # Dessin du forage en gris sauf zones de sill
+        sill_segments = []
+        other_segments = [(top, depth)]
+        for horizon in details['horizons']:
+            if horizon['name'].lower() == "sill":
+                sill_segments.append((horizon['top'], horizon['bottom']))
+                other_segments = [(start, min(end, horizon['top'])) for (start, end) in other_segments if end > horizon['top']]
+                other_segments += [(max(horizon['bottom'], start), end) for (start, end) in [(top, depth)] if end > horizon['bottom']]
+
+        # Barres hors sill (gris)
+        for seg_top, seg_bottom in other_segments:
+            if seg_bottom > seg_top:
+                plt.bar(details['x_position'], seg_bottom - seg_top, bottom=seg_top, color='#e0e0e0', edgecolor='k', width=bar_width, alpha=0.5)
+
+        # Barres sill (rouge)
+        for sill_top, sill_bottom in sill_segments:
+            plt.bar(details['x_position'], sill_bottom - sill_top, bottom=sill_top, color='darkred', edgecolor='k', width=bar_width)
+
+        infos = details.get("infos", None)
+        if infos is not None and len(infos) > 0:
+            depths = infos[:, 1].astype(float)    # profondeur (y)
+            flags  = infos[:, 4].astype(int)      # 1 ou 2
+        
+            for flag, marker in MARKERS.items():
+                mask = flags == flag
+                if mask.any():
+                    sc = plt.scatter(
+                        np.full(mask.sum(), details['x_position']),  # x
+                        depths[mask],                                # y
+                        color=color,
+                        edgecolors='k',
+                        linewidths=0.5,
+                        marker=marker,      # cercle ou carré
+                        zorder=5
+                    )
+        
+                    # curseur interactif uniquement pour ce sous-ensemble
+                    
+                    
+                    def make_on_add(sub_infos):
+                        def on_add(sel):
+                            idx = sel.index
+                            txt = (f"ID: {sub_infos[idx,0]}\n"
+                                   f"Profondeur: {sub_infos[idx,1]}")
+                            if sub_infos.shape[1] > 2:
+                                txt += f"\nRT: {sub_infos[idx,2]}"
+                            if sub_infos.shape[1] > 3:
+                                txt += f"\nClays: {sub_infos[idx,3]}"
+                            sel.annotation.set_text(txt)
+                        return on_add
+                                        # juste après avoir créé sc = plt.scatter(...)
+                    cursor = mplcursors.cursor(sc, hover=True)
+                    
+                    # connexion pour afficher le texte
+                    cursor.connect("add", make_on_add(infos[mask]))
+                    def on_remove(sel):
+                        # On retire l'annotation de l'axe
+                        sel.annotation.remove()
+                        # On redessine la figure pour effacer le fantôme
+                        sel.annotation.figure.canvas.draw_idle()
+
+
+                    cursor.connect("remove", on_remove)
+
+
+                    
+                    
+        
+
+        scatters.append((sc, details, forage))
+        # Horizons autres (non sill)
+        for horizon in details['horizons']:
+            if horizon['name'].lower() != "sill":
+                plt.fill_between([details['x_position'] - bar_width / 2, details['x_position'] + bar_width / 2], horizon['top'], horizon['bottom'],
+                                 color=horizon['color'], alpha=1, label=horizon['name'], edgecolor='k', linewidth =0.25)
+
+    plt.gca().invert_yaxis()
+    plt.xticks(x_positions, forage_labels, rotation=45, ha='right')
+    plt.ylabel('Depth (mbsf)')
+    plt.title(f'{site}')
+
+    plt.grid(axis='y')
+
+    handles, labels = plt.gca().get_legend_handles_labels()
+
+    by_label = dict(zip(labels, handles))
+
+    plt.legend(by_label.values(), by_label.keys(), loc='best')
+
+    plt.tight_layout()
+
+    plt.show()
