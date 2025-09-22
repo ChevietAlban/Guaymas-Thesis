@@ -4,8 +4,7 @@ Created on Tue Dec 20 09:34:23 2022
 
 @author: Alban
 """
-#plotly
-#
+
 from tkinter import END
 import numpy as np
 import csv
@@ -17,7 +16,7 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.io as io 
 # from matplotlib import image
-from tkinter import Tk, Label,Scrollbar, Frame,messagebox,Listbox, Entry, Button,Toplevel,Canvas, StringVar, CENTER,Checkbutton, IntVar,RIDGE, NSEW
+from tkinter import Tk, Label,Scrollbar, Frame,messagebox,Listbox, Entry, Button,Toplevel,Canvas, StringVar, CENTER,Checkbutton, IntVar,RIDGE, NSEW, filedialog
 from tkinter import ttk
 from tkinter import messagebox as mb
 from tkinter.filedialog import askopenfilename
@@ -26,26 +25,34 @@ from tkinter.filedialog import askopenfilename
 # from tifffile import TiffFile
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,NavigationToolbar2Tk)
 from ternary_diagram import TernaryDiagram #conda install -c conda-forge ternary-diagram
+from PIL import Image, ImageTk
 import tkinter.messagebox
 import tkinter.filedialog
 import kaleido
 import shutil
+import re
 
+Image.MAX_IMAGE_PIXELS = None
 io.renderers.default='browser'
 # io.kaleido.scope.default_format = "svg"
 # io.kaleido.scope.mathjax = None
 path ='tab_minerals.csv'
 
+def on_frame_configure(canvas):
+    """Reset the scroll region to encompass the inner frame."""
+    canvas.configure(scrollregion=canvas.bbox("all"))
+
+
 """Ouverture des fichiers de paramètres"""
 with open(path, 'r') as reader_tab_minerals :
-    reader_tab_minerals  = csv.reader(reader_tab_minerals, delimiter = ';')
+    reader_tab_minerals  = csv.reader(reader_tab_minerals, delimiter = ',')
     convert_tab_minerals = list(reader_tab_minerals)
     tab_minerals         = np.array(convert_tab_minerals)
-
 option_minerals_list = tab_minerals[0,1:]
 option_minerals_list = option_minerals_list.tolist() 
 
 control_formule_strcutrale_exist = 0
+
 info_bases_MEB="""User :   
     
 Sample :
@@ -246,11 +253,7 @@ def w_MIC():                                                       #main Micropr
     else : 
         
         metadata_mic.insert(tk.END,info_bases_MIC)
-    
-    
-    
-    
-    
+
     def onopen_mic():
         global access,affichage_chemical_data,chemical_data_size, chemical_data,Sum_Total_recalc, chemical_data_num,chemical_data_brut, tab_ref_red, tab_ref_size, Oxy_architecture, option_minerals_list, tab_minerals,formule_structurale_shape
         FILE = askopenfilename(title="Select a file",filetypes=[('CSV FILES','*.csv')])    
@@ -439,11 +442,12 @@ def w_SEM():
     SEM_win.update()
     main_w.withdraw()
     SEM_win.protocol("WM_DELETE_WINDOW",  show_main_w_SEM)
-    SEM_win.rowconfigure(0, weight=1)
-    SEM_win.rowconfigure(1, weight=20)
+    SEM_win.rowconfigure(0, weight=0)
+    SEM_win.rowconfigure(1, weight=0)
     #Frames
     tab_menu_SEM      = Frame(SEM_win,bg="white",highlightbackground='white')
     tab_menu_SEM.grid(row=1, column=0,columnspan=6,sticky="news")
+    tab_georef_SEM    = Frame(SEM_win,bg="white",highlightbackground='white')
     tab_calculate_SEM = Frame(SEM_win,bg="white",highlightbackground='white')
     tab_plot_SEM      = Frame(SEM_win,bg="white",highlightbackground='white') 
     #configure les colonnes et lignes pour que tout reste en place si il y a changement de taille de la fenetre
@@ -460,39 +464,171 @@ def w_SEM():
     tab_menu_SEM.columnconfigure(3, weight=1)
     tab_menu_SEM.columnconfigure(4, weight=1)
     tab_menu_SEM.columnconfigure(5, weight=1)
-    
-        
-  
-
-    tab_menu_SEM.rowconfigure(0, weight=1)
-    tab_menu_SEM.rowconfigure(1, weight=10)
+    tab_menu_SEM.rowconfigure(0, weight=0)
+    tab_menu_SEM.rowconfigure(1, weight=0)
 
     def show_menu_SEM():
         tab_calculate_SEM.lower()
         tab_plot_SEM.lower()
+        tab_georef_SEM.lower()
         tab_menu_SEM.grid(row=1, column=0,columnspan=6,sticky="news")
     def show_calculate_SEM():
         tab_plot_SEM.lower()
         tab_menu_SEM.lower()
+        tab_georef_SEM.lower()
         tab_calculate_SEM.grid(row=1, column=0,columnspan=6,sticky="news")
         tab_calculate_SEM.rowconfigure(0, weight=1)
         tab_calculate_SEM.rowconfigure(1, weight=1)
-        tab_calculate_SEM.rowconfigure(2, weight=1)
-        tab_calculate_SEM.rowconfigure(3, weight=1)
-        tab_calculate_SEM.rowconfigure(4, weight=1)
-        tab_calculate_SEM.rowconfigure(5, weight=1)
-        tab_calculate_SEM.columnconfigure(0, weight=1)
+        tab_calculate_SEM.columnconfigure(0, weight=0)
         tab_calculate_SEM.columnconfigure(1, weight=1)
         tab_calculate_SEM.columnconfigure(2, weight=1)
         tab_calculate_SEM.columnconfigure(3, weight=1)
-        tab_calculate_SEM.columnconfigure(4, weight=1)
-        tab_calculate_SEM.columnconfigure(5, weight=1)
-        tab_calculate_SEM.columnconfigure(6, weight=1)
-        tab_calculate_SEM.columnconfigure(7, weight=1)
-        tab_calculate_SEM.columnconfigure(8, weight=1)
-        tab_calculate_SEM.columnconfigure(9, weight=1)
 
+
+      
+    def show_georef():
+        tab_calculate_SEM.lower()
+        tab_plot_SEM.lower()
+        tab_menu_SEM.lower()
+        tab_georef_SEM.grid(row=1, column=0,columnspan=6,sticky="news")
+        tab_georef_SEM.rowconfigure(0, weight=1)
+        tab_georef_SEM.rowconfigure(1, weight=1)
+        tab_georef_SEM.columnconfigure(0, weight=1)
+        tab_georef_SEM.columnconfigure(1, weight=8)
+        tab_georef_SEM.columnconfigure(2, weight=8)
+    
+    Frame_bouton_georef=Frame(tab_georef_SEM,background='green',highlightbackground="white")
+    Frame_bouton_georef.columnconfigure(0, weight=1)
+    Frame_bouton_georef.rowconfigure(0, weight=1)
+    Frame_bouton_georef.grid(row=0, column=0,rowspan=2, sticky="news")
+    Frame_scan=Frame(tab_georef_SEM,background='red',highlightbackground="white")
+    Frame_scan.grid(row=0, column=1,rowspan=2, sticky="news")
+    Frame_image1=Frame(tab_georef_SEM,background='blue',highlightbackground="white")
+    Frame_image1.grid(row=0, column=2,rowspan=2, sticky="news")
+    Frame_image1.columnconfigure(0, weight=1)
+    Frame_image1.rowconfigure(0, weight=1)
+    Frame_image2=Frame(tab_georef_SEM,background='yellow',highlightbackground="white")
+    Frame_image2.grid(row=1, column=2,rowspan=2, sticky="news")
+    Frame_scan.rowconfigure(0, weight=1)
+    Frame_scan.columnconfigure(0, weight=1)
+
+    def import_scan():            
+        def on_canvas_click(event):
+    # Clic gauche pour dessiner un point
+            if event.num == 1:
+                print(f"Point ajouté à la position ({event.x}, {event.y})")
+                point_id = canvas1.create_oval(event.x - radius, event.y - radius, event.x + radius, event.y + radius, fill='red')
+                points.append(point_id)  # Ajouter l'ID du point à la liste
+    # Clic droit pour effacer le point le plus proche
+            elif event.num == 3:
+                effacer_point_proche(event.x, event.y)
+
+        def effacer_point_proche(x, y):
+            for point_id in points:
+                # Obtenir les coordonnées du point
+                x1, y1, x2, y2 = canvas1.coords(point_id)
+                centre_x = (x1 + x2) / 2
+                centre_y = (y1 + y2) / 2
+                # Vérifier si le clic est à l'intérieur du rayon du point
+                if (centre_x - radius <= x <= centre_x + radius) and (centre_y - radius <= y <= centre_y + radius):
+                    print(f"Point effacé à la position ({centre_x}, {centre_y})")
+                    canvas1.delete(point_id)  # Effacer le point du Canvas
+                    points.remove(point_id)  # Enlever le point de la liste
+                    break  # Arrêter après avoir effacé le premier point trouvé
+            
+            
+        def ajuster_image(event):
+            global photo_image_scan
+            if not original_image:  # Vérifier si une image a été chargée
+                return
+    
+            cadre_largeur = Frame_scan.winfo_width()
+            cadre_hauteur = Frame_scan.winfo_height()
+            img_ratio = original_image.width / original_image.height
+            cadre_ratio = cadre_largeur / cadre_hauteur
+            if img_ratio > cadre_ratio:
+                nouvelle_largeur = cadre_largeur
+                nouvelle_hauteur = int(nouvelle_largeur / img_ratio)
+            else:
+                nouvelle_hauteur = cadre_hauteur
+                nouvelle_largeur = int(nouvelle_hauteur * img_ratio)
+            nouvelle_image = original_image.resize((nouvelle_largeur, nouvelle_hauteur), Image.Resampling.LANCZOS)
+            photo_image_scan = ImageTk.PhotoImage(nouvelle_image)
+            x = (cadre_largeur - nouvelle_largeur) // 2
+            y = (cadre_hauteur - nouvelle_hauteur) // 2
+            canvas1.coords(image_on_canvas, x, y)
+            canvas1.itemconfig(image_on_canvas, image=photo_image_scan)
+        
+        import_scan= filedialog.askopenfilename(title="Ouvrir une image", filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp *.gif *.tif *.tiff")])
+        original_image = Image.open(import_scan)
+        canvas1 = tk.Canvas(Frame_scan)
+        canvas1.grid(row=0, column=0, sticky="nsew")
+        photo_image = ImageTk.PhotoImage(original_image)
+        image_on_canvas = canvas1.create_image(0, 0, anchor='nw', image=photo_image)
+
+        # Associer un gestionnaire d'événement de clic à canvas
+        canvas1.bind("<Button-1>", on_canvas_click)  # Bouton gauche
+        canvas1.bind("<Button-3>", on_canvas_click)  # Bouton droit
+
+        radius = 5  # Rayon des points dessinés sur le canvas
+        points = []  # Liste pour stocker les IDs des points sur le canvas
+
+        Frame_scan.bind("<Configure>", ajuster_image)
+        
+    def ouvrir_image():
+        
+        def ajuster_image1(event):
+            global photo_image1
+            if not original_image1:
+                return
+
+            Frame_image1.update_idletasks()  # S'assurer que les mises à jour du Frame sont traitées
+            cadre_largeur = Frame_image1.winfo_width()
+            cadre_hauteur = Frame_image1.winfo_height()
+            
+            img_ratio = original_image1.width / original_image1.height
+            cadre_ratio = cadre_largeur / cadre_hauteur
+
+            if img_ratio > cadre_ratio:
+                nouvelle_largeur = cadre_largeur
+                nouvelle_hauteur = int(nouvelle_largeur / img_ratio)
+            else:
+                nouvelle_hauteur = cadre_hauteur
+                nouvelle_largeur = int(nouvelle_hauteur * img_ratio)
+
+            nouvelle_image = original_image1.resize((nouvelle_largeur, nouvelle_hauteur), Image.Resampling.LANCZOS)
+            photo_image1 = ImageTk.PhotoImage(nouvelle_image)
+            
+            x = (cadre_largeur - nouvelle_largeur) // 2
+            y = (cadre_hauteur - nouvelle_hauteur) // 2
+
+            canvas_image.coords(image_on_canvas1, x, y)
+            canvas_image.itemconfig(image_on_canvas1, image=photo_image1)
+            
+        import_scan= filedialog.askopenfilename(title="Ouvrir une image", filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp *.gif *.tif *.tiff")])
+        original_image1 = Image.open(import_scan)
+        canvas_image = tk.Canvas(Frame_image1)
+        canvas_image.grid(row=0, column=0, sticky="nsew")
+        photo_image1 = ImageTk.PhotoImage(original_image1)
+        image_on_canvas1 = canvas_image.create_image(0, 0, anchor='nw', image=photo_image1)
+
+        
+        Frame_image1.bind("<Configure>", ajuster_image1)
+
+            
+    def on_canvas_click2(event):
+        print(f"Vous avez cliqué sur la position ({event.x}, {event.y})")
+    
+    button_import_scan=ttk.Button(Frame_bouton_georef, text="Import Microscope \nScan", command=import_scan)
+    button_import_scan.grid(row=0, column=0, sticky='new')
+    button_images=ttk.Button(Frame_bouton_georef, text="Import SEM \nImages", command=ouvrir_image)
+    button_images.grid(row=1, column=0, sticky='new')
+
+
+
+    
     def show_plot_SEM():
+        tab_georef_SEM.lower()
         tab_calculate_SEM.lower()
         tab_menu_SEM.lower()
         tab_plot_SEM.grid(row=1, column=0,columnspan=6,sticky="news")
@@ -500,6 +636,7 @@ def w_SEM():
         tab_plot_SEM.columnconfigure(0,weight=1)
         tab_plot_SEM.columnconfigure(1,weight=2)
         tab_plot_SEM.columnconfigure(2,weight=2)
+        
         
         if control_formule_strcutrale_exist == 1 :
             global ternary_diag,list_poles_topapex,e,e2,ternary_diag_shape,list_poles_bottomleft,index_plot,list_poles_bottomright,select_topapex,select_bottomleft,select_bottomright
@@ -612,8 +749,7 @@ def w_SEM():
             label_star = ttk.Label(fenetre3_legend, text = '7 : Star',justify='left',anchor='nw',width=20,font=20,background="white")
             label_star.grid(row = 7, column = 1)
         
-    def save_SEM_project():
-        a=1
+
     def save_formule_structurale():
         SAVE_formule=tkinter.filedialog.asksaveasfile(title="Save as...",filetypes=[('CSV files','.csv')],defaultextension = ".txt") 
         save_formule_structurale = pd.DataFrame(formule_structurale[1:,1:], index = formule_structurale[1:,0], columns = formule_structurale[0,1:])
@@ -631,12 +767,12 @@ def w_SEM():
     
     bouton_main_show1 = ttk.Button(SEM_win, text="HOME", command = show_main_w_SEM)
     bouton_main_show1.grid(row=0, column=0,ipady=0,sticky="news")
-    bouton_save_SEM   = ttk.Button(SEM_win, text="Save Project", command = save_SEM_project)
-    bouton_save_SEM.grid(row=0, column=1,ipady=0,sticky="news")
+    bouton_georef_SEM   = ttk.Button(SEM_win, text="Georeferencement", command = show_georef)
+    bouton_georef_SEM.grid(row=0, column=3,ipady=0,sticky="news")
     bouton_import_SEM   = ttk.Button(SEM_win, text="Import data", command = import_SEM_data)
-    bouton_import_SEM.grid(row=0, column=2,ipady=0,sticky="news")
+    bouton_import_SEM.grid(row=0, column=1,ipady=0,sticky="news")
     bouton_menu_SEM   = ttk.Button(SEM_win, text="Meta-data", command = show_menu_SEM)
-    bouton_menu_SEM.grid(row=0, column=3,ipady=0,sticky="news")
+    bouton_menu_SEM.grid(row=0, column=2,ipady=0,sticky="news")
     bouton_calculate_SEM = ttk.Button(SEM_win, text="APFU", command = show_calculate_SEM)
     bouton_calculate_SEM.grid(row=0, column=4,ipady=0,sticky="news")
     bouton_plot_SEM = ttk.Button(SEM_win, text="Plots", command = show_plot_SEM)
@@ -647,7 +783,7 @@ def w_SEM():
     label_SEM_date.grid(row=0, column=2,rowspan=1,columnspan=4,sticky="ew"+"ns")
     #Images EDS
     fig2_frame = Frame(tab_calculate_SEM,bg="white",highlightbackground='white')
-    fig2_frame.grid(row=0,column=2,columnspan=3,rowspan=1,sticky='news')
+    fig2_frame.grid(row=0,column=1,sticky='news')
     figure2 = plt.Figure( facecolor='white')
     canvas2 = FigureCanvasTkAgg(figure2, fig2_frame)
     canvas2.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
@@ -657,6 +793,7 @@ def w_SEM():
     # creating the Matplotlib toolbar
     toolbar2 = NavigationToolbar2Tk(canvas2,fig2_frame)
     toolbar2.update()
+    
     
     
     
@@ -676,21 +813,30 @@ def w_SEM():
         dossier_EDS =tkinter.filedialog.askdirectory(title='Select a folder') 
         files_os = os.listdir(dossier_EDS)    
         button_open_eds_folder.destroy()
-        frame_listbox = Frame(tab_calculate_SEM,bg="white",highlightbackground='white')
-        frame_listbox.grid(row=0,column=0,rowspan=1,columnspan=2,sticky='news')
+        
+        def adjust_canvas(event):
+            canvas_width = frame_entry.winfo_reqwidth()
+            canvas.itemconfig(frame_id, width=canvas_width)
+            canvas.configure(scrollregion=canvas.bbox("all"), width=canvas_width)
+        frame_listbox = tk.Frame(tab_calculate_SEM, bg="white", highlightbackground='white')
+        frame_listbox.grid(row=0, column=0, sticky='nsew')
         frame_listbox.grid_rowconfigure(0, weight=1)
         frame_listbox.grid_columnconfigure(0, weight=1)
-        frame_listbox.grid_propagate(False)
-        canvas = tk.Canvas(frame_listbox, bg="white")
-        canvas.grid(row=0, column=0,rowspan=2, sticky="news")
-        # Link a scrollbar to the canvas
+        canvas = tk.Canvas(frame_listbox, bg="white", highlightthickness=0)
+        canvas.grid(row=0, column=0, sticky="nsew")
+    
         vsb = tk.Scrollbar(frame_listbox, orient="vertical", command=canvas.yview)
         vsb.grid(row=0, column=1, sticky='ns')
         canvas.configure(yscrollcommand=vsb.set)
+
         frame_entry = tk.Frame(canvas, bg="white")
-        canvas.create_window((0, 0), window=frame_entry, anchor='nw')   
-        button_open_folder_EDS=ttk.Button(frame_entry,text="Folder", command=points_images_EDS)
-        button_open_folder_EDS.grid(row=0, column=0,sticky='news')
+        frame_id = canvas.create_window((0, 0), window=frame_entry, anchor='nw')
+
+        frame_entry.bind("<Configure>", adjust_canvas)
+
+        button_open_folder_EDS = ttk.Button(frame_entry, text="Folder")
+        button_open_folder_EDS.grid(row=0, column=0, sticky='nsew')
+
         #cette partie récupère les dossiers de sortie EDS_MEB
         matches_P_S       = np.array([match for match in files_os if ".PS.EDS" in match])        #donne tous les fichiers d'analyses disponibles dans le dossier EDS du MEB
         k=0
@@ -715,10 +861,11 @@ def w_SEM():
             Check_button.grid(row=k+1, column=0)
             k=k+1   
         frame_entry.update_idletasks()
-        canvas.config(scrollregion=canvas.bbox("all"))
+
         
     #permet d'afficher l'image EDS + points
     def show_EDS_image():    
+        global coord_points, choice_base,img_EDS, user_base_choice
         user_base_choice = var.get()   #index de name_fichier_base
         choice_base = np.where(name_fichier_base==name_fichier_base[user_base_choice]) #renvois l'index de la base qu'on veut
         choice_base = int(choice_base[0])
@@ -748,6 +895,130 @@ def w_SEM():
         canvas2.draw()
     button_open_eds_folder=ttk.Button(tab_calculate_SEM,text="Open EDS folder", command=points_images_EDS)
     button_open_eds_folder.grid(row=0, column=0,sticky='news')
+    
+    canvas2.toolbar = toolbar2
+        
+    def on_canvas_click(event):
+        global index_point
+        if event.inaxes is not None:  # Ensure the click is within the axes of the plot
+            click_x, click_y = event.xdata, event.ydata
+            tolerance = 20  # Set the tolerance level here
+
+            # Check if coord_points is defined and accessible
+            if 'coord_points' in globals():
+                for index, (px, py) in enumerate(coord_points):
+                    if abs(click_x - px) <= tolerance and abs(click_y - py) <= tolerance:
+                        print(f"Point {index + 1} clicked!")
+                        index_point = index
+                        open_eds_file()
+                        break
+                    
+    
+    canvas2.mpl_connect('button_press_event', on_canvas_click)
+
+    def open_eds_file():
+        def read_psmas_file(filepath):
+            global metadata
+            metadata = {}
+            spectrum = []
+
+            with open(filepath, 'r') as file:
+                data_section = False
+                for line in file:
+                    line = line.strip()
+                    if line.startswith('#'):
+                        if line.startswith('#SPECTRUM'):
+                            data_section = True
+                            continue
+                        if data_section:
+                            continue
+                        key_value = line[1:].split(':')
+                        if len(key_value) > 1:
+                            key, value = key_value[0].strip(), key_value[1].strip()
+                            if key in metadata:
+                                if isinstance(metadata[key], list):
+                                    metadata[key].append(value)
+                                else:
+                                    metadata[key] = [metadata[key], value]
+                            else:
+                                metadata[key] = value
+                    else:
+                        if data_section:
+                            parts = line.split(',')
+                            if len(parts) == 3:
+                                energy, intensity = float(parts[0].strip()), float(parts[1].strip())
+                                spectrum.append((energy, intensity))
+            
+            return metadata, spectrum
+
+        def extract_peak_elements(metadata):
+            peak_elements = []
+            if '#PEAKLAB' in metadata:
+                for item in metadata['#PEAKLAB']:
+                    parts = item.split()
+                    if len(parts) >= 2:
+                        number = parts[0]
+                        element = parts[1]
+                        peak_elements.append((float(number), element))
+            return peak_elements
+
+        def extract_quant_data(metadata):
+            quant_data = {}
+            if '#QUANT_WTCON' in metadata and '#QUANT_ATCON' in metadata:
+                for wt, at in zip(metadata['#QUANT_WTCON'], metadata['#QUANT_ATCON']):
+                    parts_wt = wt.split()
+                    parts_at = at.split()
+                    element = parts_wt[0]
+                    wt_percent = parts_wt[1]
+                    atom_conc = parts_at[1]
+                    quant_data[element] = (wt_percent, atom_conc)
+            return quant_data
+
+        def plot_spectrum_with_table(spectrum, peak_elements, quant_data):
+            energies, intensities = zip(*spectrum)
+            
+            fig, ax = plt.subplots(figsize=(10, 6))
+            fig.canvas.manager.set_window_title(f'Point {index_point + 1}')
+            ax.plot(energies, intensities, linestyle='-')
+            ax.set_title('Spectrum Energy vs Intensity')
+            ax.set_xlabel('Energy (keV)')
+            ax.set_ylabel('Intensity (Counts)')
+            ax.grid(True)
+            
+            # Ajouter des barres verticales et annoter avec le nom des éléments
+            for number, element in peak_elements:
+                ax.axvline(x=number, color='r', linestyle='--')
+                ax.text(number, max(intensities) * 0.9, element, rotation=45, verticalalignment='bottom', horizontalalignment='right')
+
+            # Créer un tableau à côté du graphique
+            cell_text = []
+            columns = ['Elements', 'Wt %', 'Atom Conc']
+            for element, (wt, at) in quant_data.items():
+                cell_text.append([element, wt, at])
+
+            table = plt.table(cellText=cell_text, colLabels=columns, loc='right', cellLoc='center')
+            table.auto_set_font_size(False)
+            table.set_fontsize(8)
+            table.scale(0.55, 1.0)
+
+            plt.subplots_adjust(right=0.7)  # Ajuster pour donner de l'espace au tableau
+            plt.show()
+
+
+        match = re.search(r'\((\d+)\)', name_fichier_base[choice_base])
+        numero = match.group(1)
+        metadata, spectrum = read_psmas_file(name_fichier_base[choice_base]+"/Base("+str(numero)+")_pt"+str(index_point+1)+".psmsa")
+        peak_elements = extract_peak_elements(metadata)
+        quant_data = extract_quant_data(metadata)
+        
+        plot_spectrum_with_table(spectrum, peak_elements, quant_data)
+
+
+
+
+
+    
+    
     
     # fonctions d'ouverture de csv EDS_MEB (monomineral)
     def onopen():
@@ -809,16 +1080,31 @@ def w_SEM():
         global access,affichage_chemical_data,Saisie,chemical_data_size, chemical_data,Sum_Total_recalc, chemical_data_num,chemical_data_brut, tab_ref_red, tab_ref_size, Oxy_architecture, option_minerals_list, tab_minerals
         FILE = askopenfilename(title="Select a file",filetypes=[('CSV FILES','*.csv')])    
         access = FILE
-        canvas_fen1 = tk.Canvas(fenetre1_1, bg="white")
-        canvas_fen1.grid(row=0, column=0,rowspan=2, sticky="news")
-        # Link a scrollbar to the canvas
+        def adjust_canvas(event):
+    
+            canvas_width = frame_entry_fen1.winfo_reqwidth()
+            canvas_fen1.itemconfig(frame_id, width=canvas_width)  # Adjust width of canvas window
+            canvas_fen1.configure(scrollregion=canvas_fen1.bbox("all"), width=canvas_width)
+
+
+
+        canvas_fen1 = tk.Canvas(fenetre1_1, bg="white", highlightthickness=0)
+        canvas_fen1.grid(row=0, column=0, rowspan=2, sticky="nsew")
+
         vsb_fen1 = tk.Scrollbar(fenetre1_1, orient="vertical", command=canvas_fen1.yview)
         vsb_fen1.grid(row=0, column=1, sticky='ns')
         canvas_fen1.configure(yscrollcommand=vsb_fen1.set)
-        frame_entry_fen1 = Frame(canvas_fen1, bg="white")
-        canvas_fen1.create_window((0, 0), window=frame_entry_fen1, anchor='nw')
-        frame_entry_fen1.grid_columnconfigure(0, weight=1)
-        frame_entry_fen1.grid_columnconfigure(1, weight=1)
+
+        frame_entry_fen1 = tk.Frame(canvas_fen1, bg="white")
+        frame_id = canvas_fen1.create_window((0, 0), window=frame_entry_fen1, anchor='nw')
+
+        frame_entry_fen1.bind("<Configure>", lambda event, canvas=canvas_fen1: adjust_canvas(event))
+
+        frame_entry_fen1.grid_columnconfigure(0, weight=0)
+        frame_entry_fen1.grid_columnconfigure(1, weight=0)
+
+
+
         with open(access, 'r') as reader_access :
             reader_access  = csv.reader(reader_access, delimiter = ',')
             convert_access = list(reader_access)
@@ -843,8 +1129,6 @@ def w_SEM():
         chemical_data = chemical_data[1:,1:]
         column_shape = np.shape(chemical_data)
         column_shape = column_shape[1]
-        
-       
         k=0
         while k < column_shape :
             chemical_data[0,k] = chemical_data[0,k][2:]
@@ -862,7 +1146,6 @@ def w_SEM():
                 chemical_data_num = (chemical_data[1:,1:-1]).astype(float)              #si il n'y a pas de C remet juste en forme le tableau
         chemical_data_brut = chemical_data[:,:-1]                                        #garde un fichier brut non modifié
         chemical_data_size=np.shape(chemical_data)
-        
         temp_var=str
         list_points = chemical_data[:,0]
         list_finale = np.empty((chemical_data_size[0],1),dtype='U25')
@@ -876,7 +1159,6 @@ def w_SEM():
                 pt_temp = temp_var[9:]
                 list_finale[k,0] = 'b' + base_num_temp + pt_temp
             k=k+1
-            
         #Importation et réduction du tableau périodique
         tab_ref = pd.read_csv('table_ref_chemical_elements.csv', sep = ';', engine = 'python')
         for i in tab_ref :                                                                   #pour tous les élements dans tab_ref                                                           
@@ -902,7 +1184,6 @@ def w_SEM():
                         Saisie[i][j].grid(column=1,row=j,sticky="news")
         frame_entry_fen1.update_idletasks()
         canvas_fen1.config(scrollregion=canvas_fen1.bbox("all"))
-        
     #recupère le nombre d'oxygène (polymineral)
     def Selected_elem():
          global Saisie,Oxy_architecture,mineral,Mineral_type
@@ -939,7 +1220,7 @@ def w_SEM():
         else : 
             mb.showinfo(title='Choice', message='Please select an other mineral !')  
     
-    #fonction pour calculer les formules strucurales MEB (mono/poly mineral)
+    #fonction pour calculer les formules strucurales MEB (monomineral)
     def calcul_MEB_silicates():
             global formule_structurale,M_elements,formule_structurale_shape,control_formule_strcutrale_exist,list_poles_topapex,list_poles_bottomleft,list_poles_bottomright
             #Calcul APFU silicates
@@ -998,53 +1279,53 @@ def w_SEM():
                 # formule_structurale = np.concatenate((headers_index,formule_structurale), axis = 1)
                 #écriture des formules structurales
                 #cas des plagioclases 
-                if mineral == "Plagioclase" :
-                    nb_cations_round = np.around(nb_cations, decimals = 2)
-                    pos_Si = np.where(formule_structurale=='Si')
-                    pos_Si = pos_Si[1]-1   
-                    pos_O  = np.where(formule_structurale=='O')
-                    pos_O  = pos_O[1]-1
-                    pos_Al = np.where(formule_structurale=='Al')
-                    pos_Al = pos_Al[1]-1
-                    pos_Na = np.where(formule_structurale=='Na')
-                    pos_Na = pos_Na[1]-1
-                    pos_Ca = np.where(formule_structurale=='Ca')
-                    pos_Ca = pos_Ca[1]-1
-                    pos_K  = np.where(formule_structurale=='K')
-                    pos_K  = pos_K[1]-1
-                    k = 0
-                    formule = np.empty((chemical_data_num_atom_size_index,1), dtype=object)
-                    while k < chemical_data_num_atom_size_index :
-                        ValueSi = str(nb_cations_round[k,pos_Si])
-                        ValueSi = ValueSi[1:-1]
-                        ValueO  = str(nb_cations_round[k,pos_O])
-                        ValueO = ValueO[1:-1]
-                        ValueAl = str(nb_cations_round[k,pos_Al])
-                        ValueAl = ValueAl[1:-1]
-                        ValueNa = str(nb_cations_round[k,pos_Na])
-                        ValueNa = ValueNa[1:-1]
-                        ValueCa = str(nb_cations_round[k,pos_Ca])
-                        ValueCa = ValueCa[1:-1]
-                        ValueK  = str(nb_cations_round[k,pos_K])
-                        ValueK = ValueK[1:-1]
-                        formule[k,:] = "K"+ValueK+"Na"+ValueNa+"Ca"+ValueCa+"Al"+ValueAl+"[Si"+ValueSi+"O"+ValueO+"]"
-                        k = k+1
-                    header_formule = np.empty((1,1), dtype=object)
-                    header_formule[0,0] = "Formule_structurale"
-                    formule = np.concatenate((header_formule,formule), axis = 0)
-                    formule_structurale = np.concatenate((formule_structurale,formule), axis = 1)
-                    if pos_Si.size == 0 :
-                        formule_structurale = np.delete(formule_structurale, (-1), axis = 1)
-                    if pos_O.size == 0 :
-                        formule_structurale = np.delete(formule_structurale, (-1), axis = 1)
-                    if pos_Al.size == 0 :
-                        formule_structurale = np.delete(formule_structurale, (-1), axis = 1)
-                    if pos_Na.size == 0 :
-                        formule_structurale = np.delete(formule_structurale, (-1), axis = 1)
-                    if pos_Ca.size == 0 :
-                        formule_structurale = np.delete(formule_structurale, (-1), axis = 1)
-                    if pos_K.size == 0 :
-                        formule_structurale = np.delete(formule_structurale, (-1), axis = 1)
+                # if mineral == "Plagioclase" :
+                #     nb_cations_round = np.around(nb_cations, decimals = 2)
+                #     pos_Si = np.where(formule_structurale=='Si')
+                #     pos_Si = pos_Si[1]-1   
+                #     pos_O  = np.where(formule_structurale=='O')
+                #     pos_O  = pos_O[1]-1
+                #     pos_Al = np.where(formule_structurale=='Al')
+                #     pos_Al = pos_Al[1]-1
+                #     pos_Na = np.where(formule_structurale=='Na')
+                #     pos_Na = pos_Na[1]-1
+                #     pos_Ca = np.where(formule_structurale=='Ca')
+                #     pos_Ca = pos_Ca[1]-1
+                #     pos_K  = np.where(formule_structurale=='K')
+                #     pos_K  = pos_K[1]-1
+                #     k = 0
+                #     formule = np.empty((chemical_data_num_atom_size_index,1), dtype=object)
+                #     while k < chemical_data_num_atom_size_index :
+                #         ValueSi = str(nb_cations_round[k,pos_Si])
+                #         ValueSi = ValueSi[1:-1]
+                #         ValueO  = str(nb_cations_round[k,pos_O])
+                #         ValueO = ValueO[1:-1]
+                #         ValueAl = str(nb_cations_round[k,pos_Al])
+                #         ValueAl = ValueAl[1:-1]
+                #         ValueNa = str(nb_cations_round[k,pos_Na])
+                #         ValueNa = ValueNa[1:-1]
+                #         ValueCa = str(nb_cations_round[k,pos_Ca])
+                #         ValueCa = ValueCa[1:-1]
+                #         ValueK  = str(nb_cations_round[k,pos_K])
+                #         ValueK = ValueK[1:-1]
+                #         formule[k,:] = "K"+ValueK+"Na"+ValueNa+"Ca"+ValueCa+"Al"+ValueAl+"[Si"+ValueSi+"O"+ValueO+"]"
+                #         k = k+1
+                #     header_formule = np.empty((1,1), dtype=object)
+                #     header_formule[0,0] = "Formule_structurale"
+                #     formule = np.concatenate((header_formule,formule), axis = 0)
+                #     formule_structurale = np.concatenate((formule_structurale,formule), axis = 1)
+                #     if pos_Si.size == 0 :
+                #         formule_structurale = np.delete(formule_structurale, (-1), axis = 1)
+                #     if pos_O.size == 0 :
+                #         formule_structurale = np.delete(formule_structurale, (-1), axis = 1)
+                #     if pos_Al.size == 0 :
+                #         formule_structurale = np.delete(formule_structurale, (-1), axis = 1)
+                #     if pos_Na.size == 0 :
+                #         formule_structurale = np.delete(formule_structurale, (-1), axis = 1)
+                #     if pos_Ca.size == 0 :
+                #         formule_structurale = np.delete(formule_structurale, (-1), axis = 1)
+                #     if pos_K.size == 0 :
+                #         formule_structurale = np.delete(formule_structurale, (-1), axis = 1)
                 formule_structurale_shape = np.shape(formule_structurale)
                 control_formule_strcutrale_exist = 1
                 #pour les diagrammes ternaires
@@ -1053,8 +1334,7 @@ def w_SEM():
                 if ('Formule_structurale' in formule_structurale) == True :
                     del list_poles[-1]
                 if ('' in formule_structurale) == True :
-                    del list_poles[0]
-                    
+                    del list_poles[0] 
                 list_poles_topapex     = list_poles
                 list_poles_bottomright = list_poles
                 list_poles_bottomleft  = list_poles
@@ -1062,15 +1342,13 @@ def w_SEM():
                 automatic_save = project_name+'/formule_structurale.csv'
                 save_formule_structurale = pd.DataFrame(formule_structurale[1:,1:], index = formule_structurale[1:,0], columns = formule_structurale[0,1:])
                 save_formule_structurale.to_csv(automatic_save) #enregistre les données
-            
             #calcul APFU pour carbonates
             if Mineral_type[0,0] == 2 :
                 Carbone_architecture = Oxy_architecture/3 
                 chemical_data_num_size = chemical_data_num.shape
                 chemical_data_num_size_cols = chemical_data_num_size[1]
                 chemical_data_num_size = chemical_data_num_size[0]
-                M_elements       = np.reshape(tab_ref_red[0,:],(1,tab_ref_size))              #masse molaire des élements
-                M_elements       = M_elements[:,1:-1]
+                M_elements       = np.reshape(tab_ref_red[0,1:-1],(1,tab_ref_size-2))              #masse molaire des élements
                 pos_O            = np.where(chemical_data=='O')                               #cherche la posititon de 'O'
                 pos_O            = pos_O[1]
                 chemical_data_num_atom = np.empty((chemical_data_num_size,chemical_data_num_size_cols), dtype = object)
@@ -1114,10 +1392,85 @@ def w_SEM():
                 automatic_save = project_name+'/formule_structurale.csv'
                 save_formule_structurale = pd.DataFrame(formule_structurale[1:,1:], index = formule_structurale[1:,0], columns = formule_structurale[0,1:])
                 save_formule_structurale.to_csv(automatic_save) #enregistre les données
+    
+    
+    def calcul_MEB_silicates_poly():
+            global formule_structurale,M_elements,Carbone_architecture,formule_structurale_shape,control_formule_strcutrale_exist,list_poles_topapex,list_poles_bottomleft,list_poles_bottomright
+            #Calcul APFU silicates
+            M_elements       = np.reshape(tab_ref_red[0,1:-1],(1,tab_ref_size-2))
+            pos_O            = np.where(chemical_data=='O')                               
+            pos_O            = pos_O[1]-1
+            Carbone_architecture = np.zeros((len(Mineral_type),1),dtype=int)
+            
+            
+            k=0 
+            while k < len(Mineral_type) : 
+                if Mineral_type[k]==2:
+                    Carbone_architecture[k,0] = Oxy_architecture[k]/3 
+                else :
+                    Carbone_architecture[k,0] = 0
+                k=k+1
+            
+            chemical_data_num_size = chemical_data_num.shape
+            chemical_data_num_size_cols = chemical_data_num_size[1]
+            chemical_data_num_size = chemical_data_num_size[0]
+            colonne_carbone = np.empty((chemical_data_num_size+1,1),dtype=object)
+            colonne_carbone[0,0]='C'
+            colonne_carbone[1:,0]=Carbone_architecture[:,0]
 
+            
+
+            for i in chemical_data_num :
+                    chemical_data_num_atom = chemical_data_num/M_elements                               #calcul la proportion de cations n =m/M
+            oxygene          = chemical_data_num_atom[:,pos_O]                                      #copie la colonne O
+            chemical_data_num_atom_size      = chemical_data_num_atom.shape
+            chemical_data_num_atom_size_index = chemical_data_num_atom_size[0]
+            nb_cations = np.zeros((chemical_data_num_atom_size[0],chemical_data_num_atom_size[1]))  #prépare une matrice de même taille que chemical_data_num
+            k = 0                                                                                   #initialisation boucle
+            while k < chemical_data_num_atom_size_index :                                           #pour toutes les lignes k
+                for i in chemical_data_num_atom[k,:] :                                              #lit pour i tous les élements de la ligne k
+                    nb_cations[k,:] = chemical_data_num_atom[k,:]*(Oxy_architecture[k,0]/oxygene[k,0])   #calcul final
+                k = k+1                                                                             #pas de la boucle
+            nb_cations = np.round(nb_cations,decimals=2)
+            chemical_data_brut_size = chemical_data_brut.shape
+            size_headers_cols  = chemical_data_brut_size[1]
+            size_headers_index = chemical_data_brut_size[0]
+            headers_cols  = np.reshape((chemical_data_brut[0,1:]), (1,size_headers_cols-1))
+            headers_index = np.reshape((chemical_data_brut[:,0]), (size_headers_index,1))
+            
+            formule_structurale = np.concatenate((headers_cols,nb_cations), axis = 0)               #restructure le fichier final
+            formule_structurale = np.concatenate((headers_index,formule_structurale), axis = 1)
+            formule_structurale = np.concatenate((formule_structurale,colonne_carbone), axis = 1)
+            formule_structurale_shape = np.shape(formule_structurale)
+            
+            
+            control_formule_strcutrale_exist = 1
+                
+                
+            #pour les diagrammes ternaires
+            list_poles = formule_structurale[0,:]
+            list_poles = list_poles.tolist()   
+            if ('Formule_structurale' in formule_structurale) == True :
+                    del list_poles[-1]
+            if ('' in formule_structurale) == True :
+                    del list_poles[0] 
+            list_poles_topapex     = list_poles
+            list_poles_bottomright = list_poles
+            list_poles_bottomleft  = list_poles
+            #Enregistrement des données de sortie dans le dossier du projet 
+            automatic_save = project_name+'/formule_structurale.csv'
+            save_formule_structurale = pd.DataFrame(formule_structurale[1:,1:], index = formule_structurale[1:,0], columns = formule_structurale[0,1:])
+            save_formule_structurale.to_csv(automatic_save) #enregistre les données
+            #calcul APFU pour carbonates
+            #if Mineral_type[0,0] == 2 :
+                
+               
+               
+                
+               
     #crée l'onglet avec mono ou polymineral
     tabControl = ttk.Notebook(tab_calculate_SEM)
-    tabControl.grid(row=0,column=5,columnspan=1,rowspan=1,sticky="news")
+    tabControl.grid(row=0,column=2,rowspan=1,sticky="news")
     tab1 = Frame(tabControl,bg="white",highlightbackground='white')
     tab2 = Frame(tabControl,bg="white",highlightbackground='white')
     tabControl.add(tab1, text ='Mono mineral')
@@ -1138,10 +1491,11 @@ def w_SEM():
     tab2.grid_rowconfigure(4, weight=1)
     #fenetre pour choisir le minéral pour poly
     fenetre1_1 = Frame(tab_calculate_SEM,bg="white",highlightbackground='white')
-    fenetre1_1.grid(row=0,column=6,columnspan=4,rowspan=1,sticky="news")
+    fenetre1_1.grid(row=0,column=3,rowspan=1,sticky="news")
     fenetre1_1.grid_rowconfigure(0, weight=1)
     fenetre1_1.grid_columnconfigure(0, weight=1)
-    fenetre1_1.grid_propagate(False)
+    fenetre1_1.grid_columnconfigure(1, weight=0)
+
     select_mineral=ttk.Combobox(tab1, textvariable=option_minerals_list,font=16)
     select_mineral['values']=option_minerals_list
     select_mineral.grid(column=0, row=2, sticky='news')
@@ -1153,7 +1507,7 @@ def w_SEM():
     button_save2.grid(row=4, column=0,sticky="news")
     #fenetre pour visualiser le résultat du calcul
     fenetre2 = Frame(tab_calculate_SEM,bg="white",highlightbackground='white')
-    fenetre2.grid(row=3,column=0,columnspan=10,rowspan=3,sticky="news")
+    fenetre2.grid(row=3,column=0,columnspan=4,rowspan=3,sticky="news")
     fenetre2.grid_rowconfigure(0, weight=1)
     fenetre2.grid_columnconfigure(0, weight=1)
     #ouverture d'un tableau numpy dans Tk 
@@ -1183,6 +1537,7 @@ def w_SEM():
             rows.append(cols)
         frame_entry.update_idletasks()
         canvas.config(scrollregion=canvas.bbox("all"))
+        
     #Monomineral
     button_open=ttk.Button(tab1,text="Open SEM file...", command=onopen)
     button_open.grid(row=0, column=0, sticky='news')
@@ -1196,7 +1551,7 @@ def w_SEM():
     button_open_poly=ttk.Button(tab2,text="Open EDS file...", command=onopen_choice_minerals)
     button_open_poly.grid(row=0, column=0, sticky='news')
     #bouton lancer le calcul
-    button_calcul_poly=ttk.Button(tab2,text="Calcul structural formula", command=calcul_MEB_silicates)
+    button_calcul_poly=ttk.Button(tab2,text="Calcul structural formula", command=calcul_MEB_silicates_poly)
     button_calcul_poly.grid(row=2, column=0, sticky='news')
     button_check_poly=ttk.Button(tab2, text='Confirm selection', command=Selected_elem)
     button_check_poly.grid(row=1, column=0, sticky='news')    
@@ -1209,21 +1564,18 @@ def w_SEM():
     #importation des données
     
     frame_button_plot = Frame(tab_plot_SEM,background='white')
-    frame_button_plot.grid(row=0,column=0, sticky='news')
     frame_button_plot.columnconfigure(0,weight=1)
     frame_button_plot.columnconfigure(1,weight=1)
+    frame_button_plot.grid(row=0,column=0, sticky='news')
+
     
     def import_data():
-        global ternary_diag,list_poles_topapex,e,e2,ternary_diag_shape,list_poles_bottomleft,index_plot,list_poles_bottomright,select_topapex,select_bottomleft,select_bottomright,control_formule_strcutrale_exist
+        global ternary_diag,list_poles_topapex,convert_import_data,e,e2,ternary_diag_shape,list_poles_bottomleft,index_plot,list_poles_bottomright,select_topapex,select_bottomleft,select_bottomright,control_formule_strcutrale_exist
         import_data_ternary = askopenfilename(title="Select a file",filetypes=[('CSV FILES','*.csv')])    
         import_data = import_data_ternary
         with open(import_data, 'r') as reader_import_data :
             reader_import_data = csv.reader(reader_import_data, delimiter = ',')
             convert_import_data = list(reader_import_data)
-            k=0
-            while k < len(convert_import_data) : 
-                del convert_import_data[1+k]
-                k=k+1
             import_formule_data = np.asarray(convert_import_data)
         list_poles = import_formule_data[0,:]
         list_poles = list_poles.tolist()   
@@ -1388,12 +1740,18 @@ def w_SEM():
             fig_binary.write_html('tmp.html', auto_open=True)
             filename_svg_bi = project_name+'/Binary_Diagram.svg'   
             fig_binary.write_image(filename_svg_bi,format="svg", engine="kaleido")
-            
-
+             
+        
+    
+    
+    
+    
+    #plots
     button_import_SEM_APFU = ttk.Button(frame_button_plot,text="Import APFU file",command=import_data)
     button_import_SEM_APFU.grid(row=0,column=0,columnspan=2, sticky="ew")
     button_import_SEM_APFU = ttk.Button(frame_button_plot,text="Plot",command=plot_ternary)
     button_import_SEM_APFU.grid(row=4,column=0,columnspan=2, sticky="ew")
+    
 """Menu transferts de masse"""   
 
 def w_massbalance():
@@ -1406,9 +1764,9 @@ def w_massbalance():
     mass_w.update()
     print('mass')
 
-"""Menu isotopes stables"""
+"""Menu ACP"""
 
-def w_stableisotopes():
+def w_PCA():
     main_w.destroy()
     stable_w = Tk()
     stable_w.title("HOME")
@@ -1416,7 +1774,7 @@ def w_stableisotopes():
     stable_w.configure(bg="white")
     stable_w.focus_set()
     stable_w.update()
-    print('isotopes')
+    print('PCA')
 
 """Création des différents boutons amenant aux différents menus"""    
 
@@ -1440,7 +1798,7 @@ def main_w1():
     bouton_main_w2.grid(row=1, column=0,columnspan=2, sticky='nsew',pady=1,padx=2)
     bouton_main_w3 = ttk.Button(main_w, text="Mass Balance", command = main_w3,style='Custom.TButton',width = 35)
     bouton_main_w3.grid(row=2, column=0,columnspan=2, sticky='nsew',pady=1,padx=2)
-    bouton_main_w4 = ttk.Button(main_w, text="Stable Isotopes", command = main_w4,style='Custom.TButton',width = 35)
+    bouton_main_w4 = ttk.Button(main_w, text="PCA", command = main_w4,style='Custom.TButton',width = 35)
     bouton_main_w4.grid(row=3, column=0,columnspan=2, sticky='nsew',pady=1,padx=2)
     main_w.update()
 def main_w2():
@@ -1457,7 +1815,7 @@ def main_w2():
     bouton_main_w2_2.grid(row=1, column=1,sticky='nsew')
     bouton_main_w3 = ttk.Button(main_w, text="Mass Balance", command = main_w3,style='Custom.TButton',width = 35)
     bouton_main_w3.grid(row=2, column=0,columnspan=2, sticky='nsew',pady=1,padx=2)
-    bouton_main_w4 = ttk.Button(main_w, text="Stable Isotopes", command = main_w4,style='Custom.TButton',width = 35)
+    bouton_main_w4 = ttk.Button(main_w, text="PCA", command = main_w4,style='Custom.TButton',width = 35)
     bouton_main_w4.grid(row=3, column=0,columnspan=2, sticky='nsew',pady=1,padx=2)
     main_w.update()
 def main_w3():
@@ -1475,7 +1833,7 @@ def main_w3():
     bouton_main_w2.grid(row=1, column=0,columnspan=2, sticky='nsew',pady=1,padx=2)
     bouton_main_w3 = ttk.Button(main_w, text="Mass Balance", command = w_massbalance,width = 35)
     bouton_main_w3.grid(row=2, column=0,columnspan=2, sticky='nsew',pady=1,padx=2)
-    bouton_main_w4 = ttk.Button(main_w, text="Stable Isotopes", command = w_stableisotopes,style='Custom.TButton',width = 35)
+    bouton_main_w4 = ttk.Button(main_w, text="PCA-", command = w_PCA,style='Custom.TButton',width = 35)
     bouton_main_w4.grid(row=3, column=0,columnspan=2, sticky='nsew',pady=1,padx=2)
     main_w.update()
 def main_w4():
@@ -1493,7 +1851,7 @@ def main_w4():
     bouton_main_w2.grid(row=1, column=0,columnspan=2, sticky='nsew',pady=1,padx=2)
     bouton_main_w3 = ttk.Button(main_w, text="Mass Balance", command = w_massbalance,style='Custom.TButton',width = 35)
     bouton_main_w3.grid(row=2, column=0,columnspan=2, sticky='nsew',pady=1,padx=2)
-    bouton_main_w4 = ttk.Button(main_w, text="Stable Isotopes", command = w_stableisotopes,width = 35)
+    bouton_main_w4 = ttk.Button(main_w, text="PCA", command = w_PCA,width = 35)
     bouton_main_w4.grid(row=3, column=0,columnspan=2, sticky='nsew',pady=1,padx=2)
     main_w.update()
 
@@ -1501,7 +1859,7 @@ def main_w4():
 #fenetre
 main_w = Tk()
 main_w.title("HOME")
-main_w.geometry("%dx%d" % (400, 300))
+main_w.geometry("%dx%d" % (500, 400))
 main_w.configure(bg="white")
 main_w.focus_set()
 main_w.columnconfigure(0, weight=1)
@@ -1521,13 +1879,13 @@ bouton_main_w2 = ttk.Button(main_w, text="Microprobe", command = main_w2)
 bouton_main_w2.grid(row=1, column=0,columnspan=2, sticky='nsew',pady=1,padx=2,ipady=18)
 bouton_main_w3 = ttk.Button(main_w, text="Mass Balance", command = w_massbalance)
 bouton_main_w3.grid(row=2, column=0,columnspan=2, sticky='nsew',pady=1,padx=2,ipady=18)
-bouton_main_w4 = ttk.Button(main_w, text="Stable Isotopes", command = w_stableisotopes)
+bouton_main_w4 = ttk.Button(main_w, text="PCA", command = w_PCA)
 bouton_main_w4.grid(row=3, column=0,columnspan=2, sticky='nsew',pady=1,padx=2,ipady=18)
 main_w.update()
 #création des styles
 style = ttk.Style()
 #style.theme_use('xpnative')
-style.configure('TButton', background = 'white', foreground = 'black', borderwidth=2, focusthickness=3, focuscolor='none',font=(None, 16))
+style.configure('TButton', background = 'white', foreground = 'black', borderwidth=2, focusthickness=3, focuscolor='none',font=(None, 16),justify='center',anchor='center')
 style.configure('TLabel', background = 'white', foreground = 'black')
 style.configure('white.TCheckbutton', foreground='black', background = 'white')
 style2 = ttk.Style()
